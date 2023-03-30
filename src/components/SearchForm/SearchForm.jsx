@@ -1,3 +1,4 @@
+import { func } from "prop-types";
 import { Field, Form, Formik } from 'formik';
 import { object, string } from 'yup';
 import { AiOutlineSearch } from "react-icons/ai";
@@ -34,4 +35,8 @@ export const SearchForm = ({ onSubmit }) => {
 			</Formik>
 		</>
 	)
+}
+
+SearchForm.propTypes = {
+	onSubmit: func.isRequired
 }
