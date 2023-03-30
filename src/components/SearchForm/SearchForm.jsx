@@ -29,8 +29,12 @@ export const SearchForm = ({ onSubmit }) => {
 					</button>
 					<Field
 						className="SearchForm-input"
+						name="searchQuery"
+						autoComplete="off"
+						autoFocus
 						type="text"
-						name="searchQuery" />
+						placeholder="Search images and photos"
+					/>
 				</Form>
 			</Formik>
 		</>

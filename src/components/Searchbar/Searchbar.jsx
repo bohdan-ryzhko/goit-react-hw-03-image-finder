@@ -4,9 +4,9 @@ import { SearchForm } from "components/SearchForm/SearchForm";
 export const Searchbar = ({ onSubmit }) => {
 
 	return (
-		<div className="Searchbar">
+		<header className="Searchbar">
 			<SearchForm onSubmit={onSubmit} />
-		</div>
+		</header>
 	)
 }
 
