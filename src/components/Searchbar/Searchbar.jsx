@@ -1,28 +1,10 @@
-import { Component } from "react";
-import { Field, Form, Formik } from 'formik';
+import { SearchForm } from "components/SearchForm/SearchForm";
 
-const initialValues = { searchQuery: '' };
+export const Searchbar = ({ onSubmit }) => {
 
-export class Searchbar extends Component {
-
-	submitForm = (values, { resetForm }) => {
-		this.props.onSubmit(values);
-		resetForm();
-	}
-
-	render() {
-		return (
-			<>
-				<Formik
-					initialValues={initialValues}
-					onSubmit={this.submitForm}
-				>
-					<Form>
-						<Field type="text" name="searchQuery" />
-						<button type="submit">Submit</button>
-					</Form>
-				</Formik>
-			</>
-		)
-	}
+	return (
+		<div className="Searchbar">
+			<SearchForm onSubmit={onSubmit} />
+		</div>
+	)
 }
