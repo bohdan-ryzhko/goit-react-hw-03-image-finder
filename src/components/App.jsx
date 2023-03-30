@@ -6,26 +6,19 @@ export class App extends Component {
 
   state = {
     searchQuery: "",
-    perPage: 12,
   }
 
   handleSubmit = ({ searchQuery }) => {
     this.setState({ searchQuery });
   }
 
-  onIncrementPage = ({ perPage }) => {
-    this.setState({ perPage });
-  }
-
   render() {
-    const normalizeSearchQuery = this.state.searchQuery.trim();
+    const { searchQuery } = this.state;
     return (
       <div className="App">
         <Searchbar perPage={this.state.perPage} onSubmit={this.handleSubmit} />
         <ImageGallery
-          incrementPage={this.onIncrementPage}
-          perPage={this.state.perPage}
-          searchQuery={normalizeSearchQuery}
+          searchQuery={searchQuery.trim()}
         />
       </div>
     );

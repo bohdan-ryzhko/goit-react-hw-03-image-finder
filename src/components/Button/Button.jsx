@@ -1,15 +1,14 @@
+import { exact, number } from "prop-types";
 import { Component } from "react";
 
 export class Button extends Component {
 
 	state = {
-		perPage: 24,
+		page: 2,
 	}
 
 	onIncrementPage = () => {
-		this.setState(prevState => ({
-			perPage: prevState.perPage + 12,
-		}));
+		this.setState(({ page }) => ({ page: page + 1 }));
 		this.props.incrementPage(this.state);
 	}
 
@@ -22,4 +21,10 @@ export class Button extends Component {
 			Load more
 		</button>
 	}
+}
+
+Button.propTypes = {
+	state: exact({
+		perPage: number.isRequired,
+	})
 }

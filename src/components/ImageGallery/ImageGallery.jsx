@@ -1,63 +1,71 @@
-import PropTypes from "prop-types";
+import { exact, arrayOf,  shape, number, string } from "prop-types";
 import { Component } from "react";
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import { fetchResponse } from "services/fetchResponse";
 import { Button } from "components/Button/Button";
+import { Loader } from "components/Loader/Loader";
 
 export class ImageGallery extends Component {
 
 	state = {
 		searchList: [],
-		perPage: this.props.perPage,
+		page: 1,
+		isLoad: false,
 	}
 
-	async componentDidUpdate(prevProps) {
+	onIncrementPage = ({ page }) => {
+		this.setState({ page });
+	}
+
+	async componentDidUpdate(prevProps, prevState) {
 		const prevValue = prevProps.searchQuery;
 		const nextValue = this.props.searchQuery;
 		try {
-			if (prevValue !== nextValue && nextValue !== "") {
-				const perPage = this.props.perPage;
-				const searchList = await fetchResponse(nextValue, perPage);
-				this.setState({ searchList });
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	}
+			const isRepeat = prevValue !== nextValue && nextValue !== "";
+			const updatePage = this.state.page > prevState.page;
 
-	async shouldComponentUpdate(nextProps) {
-		try {
-			if (nextProps.perPage > this.state.perPage) {
-				const perPage = this.props.perPage;
-				const nextValue = this.props.searchQuery;
-				const searchList = await fetchResponse(nextValue, perPage);
-				this.setState({ searchList });
+			if (isRepeat || updatePage) {
+				this.setState({ isLoad: true });
+				const page = this.state.page;
+				const newList = await fetchResponse(nextValue, page);
+
+				this.setState(({ searchList }) => ({
+					searchList: [
+						...searchList,
+						...newList,
+					]
+				}));
+				this.setState({ isLoad: false });
 			}
 		} catch (error) {
+			this.setState({ isLoad: false });
 			console.log(error);
 		}
 	}
 
 	render() {
-		const { searchList } = this.state;
+		const { searchList, isLoad } = this.state;
+
 		return (
 			<>
+				{(searchList.length === 0 && isLoad) && <Loader />}
 				{
 					searchList.length > 0 &&
-				<>
-					<ul className="ImageGallery">
-						{
-							searchList.map(({ id, largeImageURL, webformatURL, user }) =>
-								<ImageGalleryItem
-									key={id}
-									largeImageURL={largeImageURL}
-									webformatURL={webformatURL}
-									user={user}
-								/>
-							)
-						}
+					<>
+						<ul className="ImageGallery">
+							{
+								searchList.map(({ id, largeImageURL, webformatURL, user }) =>
+									<ImageGalleryItem
+										key={id}
+										largeImageURL={largeImageURL}
+										webformatURL={webformatURL}
+										user={user}
+									/>
+								)
+							}
 						</ul>
-						<Button incrementPage={this.props.incrementPage} />
+						{isLoad && <Loader />}
+						<Button incrementPage={this.onIncrementPage} />
 					</>
 				}
 			</>
@@ -66,10 +74,13 @@ export class ImageGallery extends Component {
 }
 
 ImageGallery.propTypes = {
-	searchList: PropTypes.arrayOf(PropTypes.shape({
-		id: PropTypes.number,
-		largeImageURL: PropTypes.string,
-		webformatURL: PropTypes.string,
-		user: PropTypes.string,
-	}))
+	state: exact({
+		searchList: arrayOf(shape({
+			id: number,
+			largeImageURL: string,
+			webformatURL: string,
+			user: string,
+		})),
+		page: number.isRequired
+	})
 }
