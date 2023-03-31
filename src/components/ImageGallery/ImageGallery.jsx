@@ -4,6 +4,7 @@ import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import { fetchResponse } from "services/fetchResponse";
 import { Button } from "components/Button/Button";
 import { Loader } from "components/Loader/Loader";
+import { ErrorMEssage } from "components/ErrorMEssage/ErrorMEssage";
 
 export class ImageGallery extends Component {
 
@@ -11,6 +12,7 @@ export class ImageGallery extends Component {
 		searchList: [],
 		page: 1,
 		isLoad: false,
+		error: null,
 	}
 
 	onIncrementPage = ({ page }) => {
@@ -20,15 +22,21 @@ export class ImageGallery extends Component {
 	async componentDidUpdate(prevProps, prevState) {
 		const prevValue = prevProps.searchQuery;
 		const nextValue = this.props.searchQuery;
+		const page = this.state.page;
 		try {
 			const isRepeat = prevValue !== nextValue && nextValue !== "";
-			const updatePage = this.state.page > prevState.page;
-
-			if (isRepeat || updatePage) {
+			const updatePage = page > prevState.page;
+			
+			if (isRepeat) {
 				this.setState({ isLoad: true });
-				const page = this.state.page;
-				const newList = await fetchResponse(nextValue, page);
+				const searchList = await fetchResponse(nextValue, page);
+				this.setState({ searchList });
+				this.setState({ isLoad: false });
+			}
 
+			if (updatePage) {
+				this.setState({ isLoad: true });
+				const newList = await fetchResponse(nextValue, page);
 				this.setState(({ searchList }) => ({
 					searchList: [
 						...searchList,
@@ -39,12 +47,16 @@ export class ImageGallery extends Component {
 			}
 		} catch (error) {
 			this.setState({ isLoad: false });
-			console.log(error);
+			this.setState({ error: error.config.url });
+			console.log(error.name);
 		}
 	}
 
 	render() {
-		const { searchList, isLoad } = this.state;
+		let { searchList, isLoad, error } = this.state;
+		if (error) {
+			error = error.split(/[q=?]/).join("");
+		}
 
 		return (
 			<>
@@ -67,6 +79,10 @@ export class ImageGallery extends Component {
 						{isLoad && <Loader />}
 						<Button incrementPage={this.onIncrementPage} />
 					</>
+				}
+				{
+					error &&
+					<ErrorMEssage error={error} />
 				}
 			</>
 		)
