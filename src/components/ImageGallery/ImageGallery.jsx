@@ -24,12 +24,13 @@ export class ImageGallery extends Component {
 		const nextValue = this.props.searchQuery;
 		const page = this.state.page;
 		try {
-			const isRepeat = prevValue !== nextValue && nextValue !== "";
+			const isRepeat = (prevValue !== nextValue) && (nextValue !== "");
 			const updatePage = page > prevState.page;
 			
 			if (isRepeat) {
+				this.setState({ page: 1 });
 				this.setState({ isLoad: true });
-				const searchList = await fetchResponse(nextValue, page);
+				const searchList = await fetchResponse(nextValue, 1);
 				this.setState({ searchList });
 				this.setState({ isLoad: false });
 			}
