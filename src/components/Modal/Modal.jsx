@@ -8,7 +8,7 @@ export class Modal extends Component {
 
 	onPressESC = ({ code }) => {
 		if (code === "Escape") {
-			this.props.onCloseModal(this.state)();
+			this.props.onCloseModal(this.state);
 		}
 	}
 
@@ -22,7 +22,7 @@ export class Modal extends Component {
 
 	render() {
 		return (
-			<div onClick={this.props.onCloseModal()} className="Overlay">
+			<div onClick={this.props.onCloseModal} className="Overlay">
 				<div className="Modal">
 					<img src={this.props.imageUrl} alt={this.props.user} />
 				</div>
